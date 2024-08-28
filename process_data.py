@@ -40,8 +40,6 @@ def build_event_row(event):
 def build_timeslot_row(timeslot):
     """
     Takes a timeslot object from json and returns a dict of fields to upload.
-
-    This function is really just here to ensure a specific order of fields.
     """
     if timeslot:
         return {
@@ -51,7 +49,6 @@ def build_timeslot_row(timeslot):
             "is_full": timeslot["is_full"],
             "instructions": timeslot["instructions"],
         }
-
 
 def build_people_row(person):
     """
@@ -71,6 +68,26 @@ def build_people_row(person):
             "postal_addresses": person["postal_addresses"],
             "sms_opt_in_status": person["sms_opt_in_status"],
             "blocked_date": person["blocked_date"],
+        }
+
+
+def build_attendance_row(attendance):
+    """
+    Takes an attendance object from json and returns a dict of fields to upload.
+    """
+    if attendance:
+        return {
+            "id": attendance.get("id"),
+            "created_date": attendance.get("created_date"),
+            "modified_date": attendance.get("modified_date"),
+            "person_id": attendance.get("person").get("id") if attendance.get("person") else None,
+            "event_id": attendance.get("event").get("id") if attendance.get("event") else None,
+            "timeslot_id": attendance.get("timeslot").get("id") if attendance.get("timeslot") else None,
+            "sponsor_id": attendance.get("sponsor").get("id") if attendance.get("sponsor") else None,
+            "status": attendance.get("status"),
+            "attended": attendance.get("attended"),
+            "referrer_id": attendance.get("referrer").get("id") if attendance.get("referrer") else None,
+            "custom_signup_field_values": attendance.get("custom_signup_field_values"),
         }
 
 
@@ -123,5 +140,20 @@ with open("output/people.csv", "w") as people_file:
         # if there's a people in this attendance, write it
         if person_row:
             writer.writerow(person_row.values())
+
+# write people
+with open("output/attendances.csv", "w") as people_file:
+    writer = csv.writer(people_file)
+
+    # write the header
+    header = build_attendance_row(attendances[0]["person"]).keys()
+    writer.writerow(header)
+
+    for attendance in attendances:
+        attendance_row = build_attendance_row(attendance)
+
+        # if there's a people in this attendance, write it
+        if attendance_row:
+            writer.writerow(attendance_row.values())
 
 print("processed", len(attendances), "attendances")
