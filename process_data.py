@@ -9,8 +9,8 @@ def build_event_row(event):
     if event:
         return {
             "id": event.get("id"),
-            "contact_id": event.get("contact"),
-            "sponsor_id": event.get("sponsor"),
+            "contact": event.get("contact"),
+            "sponsor": event.get("sponsor"),
             "location": event.get("location"),
             "title": event.get("title"),
             "description": event.get("description"),
